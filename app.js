@@ -15,7 +15,8 @@ app.use(express.json());
 app.use('/', require('./router.js'));
 
 // 5 Establecemos el motor de plantillas ejs
+const port = process.env.PORT || 3000;
 
-app.listen(3000, (req,res) =>{
+app.listen(port, (req,res) =>{
     console.log('Server run en el puerto http://localhost:3000');
 });
