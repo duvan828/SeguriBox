@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecurityBox</title>
+    <link rel="stylesheet" href="/css/estilo.css">
+    <link rel="icon" href="/img/icon.ico">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.6.0/font/bootstrap-icons.css">
+</head>
+<body id="cuerpo">
+    <header id="hInicio">
+        <nav class="navMenu">
+            <a href="#" id="icono" class="icono"><i class="bi bi-list"></i></a>
+            <div class="enlaces uno" id="enlaces">
+                <a href="#" id="inicio"><i class="bi bi-house-fill ico"></i>Inicio</a>
+                <a href="#acercade" id="acd"><i class="bi bi-info-circle-fill ico"></i>Acerca de</a>
+                <a href="#contacto" id="cont"><i class="bi bi-chat-left-dots-fill ico"></i>Contacto</a>
+            </div>
+        </nav>
+        <section class="container">
+            <section class="texto">
+            <h1>Bienvenido a Security<span class="naranja">Box</span></h1>
+            <h2>Manten seguras tus contraseñas y recuerdalas</h2>
+            <form class="formatoInicio" action="/acceder" method="POST">        
+                <div class="seccionInicio flex">
+                    <input type="text" name="correoUser" id="correoUser" class="inputs" placeholder="Usuario o Correo">
+                    <input type="password" name="contraseña" id="contraseña" class="inputs" placeholder="Contraseña">
+                    <p class="mensajeError" id="msg"><%- mensaje %></p>
+                </div>
+                <div class="seccionBotones flex">
+                    <a href="/registro" class="btn">Registrarse</a>
+                    <button type="submit" id="iniciar" class="btn">Iniciar Sesión</button>
+                </div>
+            </form>
+            </section>
+            <div class="imagenInicio" id="idImagenInicio" style="z-index: 200;">
+                <img src="/img/inicio.png" alt="SecurityBox" ></img>
+            </div>
+            <div id="FormInicio">
+
+            </div>
+      
+        </section>
+    </header>
+    <section class="ola">
+        <div style="height: 150px; overflow: hidden;" >
+            <svg viewBox="0 0 500 150" preserveAspectRatio="none" style="height: 100%; width: 100%;">
+                <path d="M0.00,49.98 C149.99,150.00 349.20,-49.98 500.00,49.98 L500.00,150.00 L0.00,150.00 Z" style="stroke: none; fill:#11366d;">
+                </path>
+            </svg>
+        </div>
+    </section>
+
+
+    <a name="acercade"></a>
+    <h1 class="titulo">
+        <b>Security<span class="naranja">Box</b>
+    </h1>
+    <section class="contenedorInfo">
+        
+        <div class="descripcion">
+        
+        
+            <p>
+                <h1>¿Que es Security<span class="naranja">Box?</h1>
+                SecurityBox es una herramienta que te suministra un servicio en el que podrás guardar tus contraseñas de los sitios que más usas en internet. También podrás generar contraseñas seguras de acuerdo a datos específicos que ofrezcas, recibirás notificaciones para realizar el cambio usual de estas y así brindarle seguridad a tus cuentas.
+            </p>
+            
+        </div>
+        <div class="logo">
+            <img src="/img/logo.png" class="imagenlogo">  
+        </div>
+        
+    </section>
+
+    <h2 class="titulo"> Recomendaciones y Tips para proteger tus cuentas</h2>
+
+    <section class="contenedorInfo">
+        <div class="logo">
+            <img src="/img/web.png" class="imagenlogo">  
+        </div>
+        <div class="descripcion">
+            <p>
+                
+                Una de las recomendaciones principales es no reutilizar las contraseñas en más de una web. Intenta tener una contraseña diferente en cada web, para que si alguien consigue descifrar una de tus contraseñas o la obtiene gracias a una filtración no pueda utilizarla para acceder a tus cuentas en más de una web o servicio online.
+            </p>
+            
+        </div>
+    </section>
+    
+    <section class="contenedorInfo">
+        
+        <div class="descripcion">
+        
+        
+            <p>
+                Intenta no compartir tus contraseñas con nadie más, ya que al hacerlo aumentas considerablemente las posibilidades de que caigan en malas manos. Esto puede ser porque la propia persona con la que las compartas las utilice para acceder a tus cuentas, pero también porque no sepa mantenerlas guardadas de forma segura y un tercero acabe conociéndolas.
+            </p>
+            
+        </div>
+        <div class="logo">
+            <img src="/img/nocompartir.jpg" class="imagenlogo">  
+        </div>
+        
+    </section>
+    <section class="contenedorInfo">
+        <div class="logo">
+            <img src="/img/cambiar.jpg" class="imagenlogo">  
+        </div>
+        <div class="descripcion">
+        
+        
+            <p>
+                
+                Es importante cambiar tus contraseñas cada cierto tiempo. Proteger tus contraseñas no siempre depende de ti al 100%, ya que puede haber filtraciones que las expongan online. Por eso es importante ir cambiando tus contraseñas para que en el caso de que estas acaben filtrándose evites que alguien pueda utilizarlas.
+            </p>
+            
+        </div>
+        
+    </section>
+    <footer>
+        <a name="contacto"></a>
+        <section class="info" >
+
+        <section class="Security">
+            <h2 class=""> <b>Security<span class="naranja">Box</b></h2>
+                <p>Manten seguras tus contraseñas y a la mano</p>
+        </section>       
+
+        <section class="red">
+            <h3 class="titulofooter">Redes sociales</h3>
+            <div class="redes">
+            <ul>
+                <li><a href="#" class="facebook"><i class="bi bi-facebook"></i></a></li>
+                <li><a href="#" class="twitter"><i class="bi bi-twitter"></i></a></li>
+                <li><a href="#" class="whatsapp"><i class="bi bi-whatsapp"></i></a></li>
+            </ul>
+            </div>
+        </section>
+        </section>
+        <section></section>
+        <h6>Trabajo Universidad de Córdoba - Desarrollo Web 1</h6>
+    </footer>
+    <script src="/js/script.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</body>
+</html>

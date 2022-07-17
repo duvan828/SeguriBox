@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>SecurityBox</title>
+        <link rel="icon" href="/img/icon.ico">
+        <link rel="stylesheet" href="/css/estilo.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.6.0/font/bootstrap-icons.css">
+    </head>
+<body class="colorB" onload="seleccionarOpcion('<%= cuenta.idsitio %>');">
+    <header class="barra flex">
+        <a href="/securitybox/<%= id %>">
+            <h1>Security<span class="naranja">Box</span></h1>
+        </a>
+    </header>
+    <form class="formatoCambiar" action="/actualizar-cuenta/<%= id %>/<%= idCuenta %>" id="formCambio" method="POST">
+        <a href="/securitybox/<%= id %>" class="salirInicio"><i class="bi bi-x-lg"></i></a>
+            <h2>Actualizar</h2>
+            <div>
+                <select name="sitioCambiar" id="sitioCambiar" class="inputs">
+                    <% sitios.forEach(sitio => { %>
+                        <option value="<%= sitio.idsitio %>"> <%= sitio.nombre %> </option>
+                    <% }) %>
+                </select>
+            </div>
+            <div>
+                <input type="text" placeholder="Correo o usuario" id="userCambiar" class="inputs" name="userCambiar" value="<%= cuenta.correoUsuario %>">
+            </div>
+            <div>
+                <input type="text" placeholder="Contraseña" id="passCambiar" class="inputs" name="passCambiar" value="<%= cuenta.contraseña %>">
+            </div>
+            <div>
+                <button type="submit" id="aceptarCambio" class="btn">Aceptar</button>
+            </div>
+    </form>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="/js/acciones.js"></script> 
+</body>
+</html>

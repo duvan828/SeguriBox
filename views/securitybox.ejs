@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>SecurityBox</title>
+        <link rel="icon" href="/img/icon.ico">
+        <link rel="stylesheet" href="/css/estilo.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.6.0/font/bootstrap-icons.css">
+    </head>
+<body class="colorB">
+    <header class="barra flex">
+        <a href="/">
+            <h1>Security<span class="naranja">Box</span></h1>
+        </a>
+        <a class="genera" onclick="listarApp();">Administrar sitios</a>
+        <nav class="barraMenu flex">
+            <ul id="options" class="options">
+                <li title="salir"><a href="/" class="option"><i class="bi bi-box-arrow-left"></i></a></li>
+                <li title="Configurar cuenta"><a href="/cuenta/<%= id %>" class="option"><i class="bi bi-gear-fill"></i></a></li>
+            </ul>
+            <div id="imgUser">
+                <div class="imgUser" ><img src="<%= img %>" title="user" class="iconoUser"></div>
+            </div>
+            
+        </nav>
+    </header>
+    <main>
+        <section class="contenedor flex">
+            <section class="SecUser">
+                <a href="/cuenta/<%= id %>" class="imgUser">
+                    <img src="<%= img %>" alt="user" class="iconoUser">
+                </a>
+            </section>
+            <section class="agregarDatos" id="datos">
+                <form action="/guardar-cuenta/<%= id %>" method="POST" class="formularioAgrega flex" id="formDatos">
+                    <h2>Guarda tus contraseñas:</h2>
+                    <div class="selectSitios">
+                        <label for="sitio">Sitio:</label>
+                        <div class="agregarApp" title="Agregar nuevo sitio" onclick="abrirOtroSitio()">
+                            <i class="bi bi-plus"></i>
+                        </div>
+                        <select name="sitio" id="sitio" class="inputs">
+                            <% sitios.forEach(sitio => { %>
+                                <option value="<%= sitio.idsitio %>"> <%= sitio.nombre %> </option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="user">Correo o Usuario:</label>
+                        <input type="text" id="user" class="inputs" name="user">
+                    </div>
+                    <div>
+                        <label for="pass">Contraseña:</label>
+                        <input type="password" id="pass" class="inputs" name="pass">
+                    </div>
+                    <div>
+                        <button type="submit" id="guardarUser" class="btn">Guardar</button>
+                    </div>
+                </form>
+            </section>
+            <section class="contenedorTabla flex">
+                <div class="barraUser flex">
+                    <h2 id="ident">Tabla de cuentas</h2>
+                    <form id="Fbusqueda" action="/securitybox-busca/<%= id %>" method="GET">
+                        <select oninput="buscar('<%= id %>')"  placeholder="Escribe sitio..." name="busca" id="busca">
+                            <option>Seleccionar Sitio</option>
+                            <% sitios.forEach(sitio => { %>
+                                <option value="<%= sitio.nombre %>"> <%= sitio.nombre %> </option>
+                            <% }) %>
+                            <option value="todos">Mostrar Todos</option>
+                        </select>
+                        <button type="submit" id="lupa"><i class="bi bi-search"></i></button>
+                    </form>
+                </div>
+                    <table class="tabla" id="tabla">
+                        <thead>
+                            <tr>
+                                <th>Sitio</th>
+                                <th>Correo / Usuario</th>
+                                <th>Contraseña</th>
+                                <th class="opt"></th>
+                        </tr>
+                        </thead>
+                        <tbody id="bodyTabla">
+                            <% cuentas.forEach(cuenta => { %>
+                                <tr>
+                                    <td><a href="http://<%= cuenta.url %>" target="blank_"><%= cuenta.Sitio %></a></td>
+                                    <td><%= cuenta.correoUsuario %></td>
+                                    <td><%= cuenta.contraseña %></td>
+                                    <td id="op">
+                                        <div id="opciones">
+                                            <a href="/editar-cuenta/<%= id %>/<%= cuenta.idcuenta %>"><i class="bi bi-gear-fill"></i></a>
+                                            <a onclick="eliminarCuenta('<%= id %>', '<%= cuenta.idcuenta %>')"><i class="bi bi-trash-fill"></i></a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+            </section>
+            <section class="botonesA">
+                <a class="btn" onclick="listarApp();">Administrar sitios</a>
+            </section>
+        </section>
+        <section class="OtrosSitios down" id="OtroSitio">
+                <form class="NuevoSitio" action="/guardar-sitio/<%= id %>" method="POST">
+                    <div class="salirInicio" onclick="cerrarOtroSitio()"><i class="bi bi-x-lg"></i></div>
+                    <h2>Agregar otro sitio</h2>
+                    <div>
+                        <input type="text" placeholder="Nombre del Sitio"  id="NombreSitio" class="inputs" name="NombreSitio">
+                    </div>
+                    <div>
+                        <input type="text" placeholder="Url del Sitio" id="url" class="inputs" name="url">
+                    </div>
+                    <div>
+                        <button type="submit" class="btn">Guardar</button>
+                    </div>
+                </form>
+            </section>
+            <section class="OtrosSitios down" id="ListaApp">
+                <div id="Apps" class="NuevoSitio" method="POST">
+                    <a onclick="salirLista()" class="salirInicio" id="salirLista"><i class="bi bi-x-lg"></i></a>
+                    <% sitios.forEach(sitio => { %>
+                        <form method="POST" id="App-<%= sitio.idsitio %>">
+                            <input type="text" placeholder="Nombre del Sitio" class="inputs" name="nombre" value="<%= sitio.nombre %>">
+                            <input type="text" placeholder="Url del Sitio" class="inputs" name="url" value="<%= sitio.url %>">
+                            <div id="opciones">
+                                <a onclick="actualizarSitio('<%= id %>', '<%= sitio.idsitio %>')"><i class="bi bi-gear-fill"></i></a>
+                                <a onclick="eliminarSitio('<%= id %>', '<%= sitio.idsitio %>')"><i class="bi bi-trash-fill"></i></a>
+                            </div>
+                        </form>
+                    <% }) %>
+                    </div>
+            </section>
+        <section class="msgComprobar moverDer down" id="msgEstado">
+            ...
+        </section>
+        <div class="generador">
+            <h2>Generador de contraseña:</h2>
+            <div id="result" contenteditable="true" spellcheck="false"></div>
+            <div class="text-right">
+            <a href="javascript:void(0);" id="btn">Generar clave</a>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <a name="contacto"></a>
+        <section class="info" >
+
+        <section class="Security">
+            <h2 class=""> <b>Security<span class="naranja">Box</b></h2>
+                <p>Manten seguras tus contraseñas y a la mano</p>
+        </section>       
+
+        <section class="red">
+            <h3 class="titulofooter">Redes sociales</h3>
+            <div class="redes">
+            <ul>
+                <li><a href="#" class="facebook"><i class="bi bi-facebook"></i></a></li>
+                <li><a href="#" class="twitter"><i class="bi bi-twitter"></i></a></li>
+                <li><a href="#" class="whatsapp"><i class="bi bi-whatsapp"></i></a></li>
+            </ul>
+            </div>
+        </section>
+        </section>
+        <section>
+            <h6>Trabajo Universidad de Córdoba - Desarrollo Web 1</h6>
+        </section>
+    </footer>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="/js/acciones.js"></script> 
+    <section class="barraMv">
+        <ul class="optionsMv" id="optionsMv">
+            <li title="salir"><a href="/" class="optionMv"><i class="bi bi-box-arrow-left"></i></a></li>
+            <li title="Configurar cuenta"><a href="/cuenta/<%= id %>" class="optionMv"><i class="bi bi-gear-fill"></i></a></li>
+        </ul>
+        <div id="abrirOps" onclick="mostrarBotones()">
+            <i class="bi bi-plus-lg"></i>
+        </div>
+    </section>
+</body>
+</html>
