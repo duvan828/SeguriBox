@@ -94,10 +94,11 @@ router.post('/save', (req,res) =>{
 // login
 
 
-router.post('/acceder', (req, res) => {
+router.post('/acceder',  (req, res) => {
     const correoUser = req.body.correoUser;
     const contraseña = req.body.contraseña;
-    conexion.query(`CALL comprobarCuenta("${correoUser}", "${contraseña}")`, (error, result) => {
+    console.log(correoUser + " " + contraseña);
+    conexion.query(`CALL comprobarInicio("${correoUser}", "${contraseña}")`, (error, result) => {
         let resultado  = Object.values(JSON.parse(JSON.stringify(result[0])));
         let id = resultado[0].idSB;
         let msg = resultado[0].valor;
@@ -118,13 +119,13 @@ router.post('/acceder', (req, res) => {
 router.get('/securitybox/:id', (req, res) => {
     const id = req.params.id;
     conexion.query(`
-    SELECT *, (SELECT nombre FROM Sitio 
+    SELECT SHA2(c.idcuenta, 224) AS idcuenta, c.correoUsuario, AES_DECRYPT(c.contraseña, "superSB") AS contraseña, (SELECT nombre FROM Sitio 
                     WHERE idsitio=c.idsitio) as Sitio, 
                 (SELECT url FROM Sitio 
                     WHERE idsitio=c.idsitio) as url FROM Cuentas c 
-    WHERE idSB=${id}`, (error, cuentas) => {
-        conexion.query(`SELECT * FROM Sitio WHERE idSB = ${id}`, (error2, sitios) => {
-            conexion.query(`CALL buscarImg(${id})`, (err, result) => {
+    WHERE SHA2(idSB, 224)="${id}"`, (error, cuentas) => {
+        conexion.query(`SELECT * FROM Sitio WHERE SHA2(idSB, 224) = "${id}"`, (error2, sitios) => {
+            conexion.query(`CALL buscarImg("${id}")`, (err, result) => {
                 let resultado  = Object.values(JSON.parse(JSON.stringify(result[0])));
                 let ruta = resultado.length == 0 ? '/fotosPerfil/defecto.jpg' : resultado[0].nombre;
                 res.render('securitybox', {id:id, sitios:sitios, cuentas:cuentas, img:ruta});
@@ -138,14 +139,14 @@ router.get('/securitybox-busca/:id', (req, res) => {
     const busca = req.query.busca;
     console.log(busca);
     conexion.query(`
-    SELECT *, (SELECT nombre FROM Sitio 
+    SELECT SHA2(c.idcuenta, 224) AS idcuenta, c.correoUsuario, AES_DECRYPT(c.contraseña, "superSB") AS contraseña, (SELECT nombre FROM Sitio 
 				WHERE idsitio=c.idsitio) as Sitio, 
             (SELECT url FROM Sitio 
 				WHERE idsitio=c.idsitio) as url FROM Cuentas c
-    WHERE idSB=${id} AND c.idsitio IN (SELECT idsitio FROM Sitio WHERE nombre LIKE "%${busca}%");`, 
+    WHERE SHA2(idSB, 224)="${id}" AND c.idsitio IN (SELECT idsitio FROM Sitio WHERE nombre LIKE "%${busca}%");`, 
     (error, cuentas) => {
-        conexion.query(`SELECT * FROM Sitio WHERE idSB = ${id}`, (error2, sitios) => {
-            conexion.query(`CALL buscarImg(${id})`, (err, result) => {
+        conexion.query(`SELECT * FROM Sitio WHERE SHA2(idSB, 224) = "${id}"`, (error2, sitios) => {
+            conexion.query(`CALL buscarImg("${id}")`, (err, result) => {
                 let resultado  = Object.values(JSON.parse(JSON.stringify(result[0])));
                 let ruta = resultado.length == 0 ? '/fotosPerfil/defecto.jpg' : resultado[0].nombre;
                 res.render('securitybox', {id:id, sitios:sitios, cuentas:cuentas, img:ruta});
@@ -159,7 +160,7 @@ router.post('/guardar-cuenta/:id', (req, res) =>{
     const idSitio = req.body.sitio;
     const usuario = req.body.user;
     const contraseña = req.body.pass;
-    conexion.query(`CALL guardarCuentas(${id}, '${usuario}', '${contraseña}', ${idSitio});`, (error, result) => {
+    conexion.query(`CALL guardarCuentas("${id}", '${usuario}', '${contraseña}', ${idSitio});`, (error, result) => {
         res.redirect('/securitybox/'+id);
     });
 });
@@ -168,7 +169,7 @@ router.post('/guardar-sitio/:id', (req, res) => {
     const id = req.params.id;
     const nombre = req.body.NombreSitio;
     const url = req.body.url;
-    conexion.query(`CALL guardarSitio(${id}, '${nombre}', '${url}')`, (error, result) => {
+    conexion.query(`CALL guardarSitio("${id}", '${nombre}', '${url}')`, (error, result) => {
         res.redirect('/securitybox/'+id);
     });
 });
@@ -176,12 +177,13 @@ router.post('/guardar-sitio/:id', (req, res) => {
 router.get('/editar-cuenta/:id/:idCuenta',(req, res) =>{ 
     let id = req.params.id;
     let idCuenta = req.params.idCuenta;
-    conexion.query(`SELECT *, (SELECT nombre FROM Sitio 
+    conexion.query(`SELECT correoUsuario, AES_DECRYPT(c.contraseña, "superSB") as contraseña, idsitio, (SELECT nombre FROM Sitio 
                                     WHERE idsitio=c.idsitio) Sitio, 
                                 (SELECT url FROM Sitio 
                                     WHERE idsitio=c.idsitio) url FROM Cuentas c
-                    WHERE idSB=${id} AND idcuenta=${idCuenta};`, (error, result) => {
-                        conexion.query(`SELECT * FROM Sitio WHERE idSB = ${id}`, (error2, sitios) => {
+                    WHERE SHA2(c.idSB, 224)="${id}" AND SHA2(c.idcuenta, 224)="${idCuenta}"`, (error, result) => {
+                        conexion.query(`SELECT * FROM Sitio WHERE SHA2(idSB, 224) = "${id}"`, (error2, sitios) => {
+                            console.log(result[0]);
                             res.render('editarCuenta', {id:id, idCuenta:idCuenta, cuenta:result[0], sitios:sitios});
                         });
                         
@@ -190,7 +192,7 @@ router.get('/editar-cuenta/:id/:idCuenta',(req, res) =>{
 
 router.get('/eliminar-cuenta/:cuenta', (req, res)=>{
     const cuenta = req.params.cuenta;
-    conexion.query(`DELETE FROM Cuentas WHERE idcuenta = ${cuenta}`);
+    conexion.query(`DELETE FROM Cuentas WHERE SHA2(idcuenta, 224) = "${cuenta}"`);
 });
 
 router.post('/actualizar-cuenta/:id/:idCuenta', (req, res) => {
@@ -199,7 +201,7 @@ router.post('/actualizar-cuenta/:id/:idCuenta', (req, res) => {
     const idsitio = req.body.sitioCambiar;
     const correoUser = req.body.userCambiar;
     const contraseña = req.body.passCambiar;
-    conexion.query(`UPDATE Cuentas SET idsitio=${idsitio}, correoUsuario='${correoUser}', contraseña='${contraseña}' WHERE idcuenta=${idCuenta}`, (error, result)=>{
+    conexion.query(`UPDATE Cuentas SET idsitio=${idsitio}, correoUsuario='${correoUser}', contraseña = AES_ENCRYPT('${contraseña}', "superSB") WHERE SHA2(idcuenta, 224)="${idCuenta}"`, (error, result)=>{
         res.redirect('/securitybox/'+id);
     });
 });
@@ -219,9 +221,9 @@ router.get('/eliminar-sitio/:idsitio', (req, res) => {
 
 router.get('/cuenta/:id', (req, res)=>{
     let id = req.params.id;
-    conexion.query(`SELECT * FROM CuentaSB NATURAL JOIN Usuario WHERE idSB = ${id}`, (e, r)=>{
+    conexion.query(`SELECT *, AES_DECRYPT(contraseña, "superSB") contraseña FROM CuentaSB NATURAL JOIN Usuario WHERE SHA2(idSB, 224) = "${id}"`, (e, r)=>{
         console.log(r[0]);
-        conexion.query(`CALL buscarImg(${id})`, (err, result) => {
+        conexion.query(`CALL buscarImg("${id}")`, (err, result) => {
             let resultado  = Object.values(JSON.parse(JSON.stringify(result[0])));
             let ruta = resultado.length == 0 ? '/fotosPerfil/defecto.jpg' : resultado[0].nombre;
             res.render('cuenta', {id:id, datos:r[0], img:ruta});
@@ -241,7 +243,7 @@ router.post('/guardar-cambios/:id', (req, res) => {
     const genero = req.body.genero;
     const contraseña = req.body.contraseña;
     conexion.query(`UPDATE Usuario SET nombre1 = '${nombre1}', nombre2 = '${nombre2}', apellido1 = '${apellido1}', apellido2 = '${apellido2}', tipoDocumento = '${documentos}', fechaNa = '${fecha}', genero = '${genero}' WHERE nDocumento = ${nDocumento}`);
-    conexion.query(`UPDATE CuentaSB SET contraseña = '${contraseña}' WHERE idSB = ${id}`);
+    conexion.query(`UPDATE CuentaSB SET contraseña = AES_ENCRYPT('${contraseña}', "superSB") WHERE SHA2(idSB, 224) = "${id}"`);
     res.redirect('/cuenta/'+id);
 });
 
@@ -255,7 +257,7 @@ router.post('/cargar/:id', (req, res)=>{
         console.log(result[0]);
         let idImg = result[0].idImagen;
         console.log(idImg);
-        conexion.query(`UPDATE CuentaSB SET idImg = ${idImg} WHERE idSB = ${id}`, (e, r)=>{
+        conexion.query(`UPDATE CuentaSB SET idImg = ${idImg} WHERE SHA2(idSB, 224) = "${id}"`, (e, r)=>{
             res.redirect('/cuenta/'+id);
         })
     });
@@ -263,7 +265,7 @@ router.post('/cargar/:id', (req, res)=>{
 
 router.get('/eliminar/:id', (req, res) => {
     const id = req.params.id;
-    conexion.query(`CALL eliminarCuentaSB(${id})`, (error, result) => {
+    conexion.query(`CALL eliminarCuentaSB("${id}")`, (error, result) => {
         res.redirect('/');
     });
 });
